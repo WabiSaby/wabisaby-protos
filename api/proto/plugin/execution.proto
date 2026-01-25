@@ -1,0 +1,113 @@
+// api/proto/plugin/execution.proto
+syntax = "proto3";
+
+package wabisaby.plugin.v1;
+
+option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/plugin;pluginpb";
+
+import "common.proto";
+
+// PluginExecutionService - Core plugin execution interface
+service PluginExecutionService {
+  // Execute a plugin command (stateless)
+  rpc ExecuteCommand(ExecuteCommandRequest) returns (ExecuteCommandResponse);
+
+  // Enable a stateful plugin (keep alive)
+  rpc EnablePlugin(EnablePluginRequest) returns (EnablePluginResponse);
+
+  // Disable a stateful plugin
+  rpc DisablePlugin(DisablePluginRequest) returns (DisablePluginResponse);
+
+  // Initialize plugin (called once per plugin process)
+  rpc InitializePlugin(InitializePluginRequest) returns (InitializePluginResponse);
+
+  // Shutdown plugin (called for cleanup)
+  rpc ShutdownPlugin(ShutdownPluginRequest) returns (ShutdownPluginResponse);
+
+  // Stream events to stateful plugins
+  rpc StreamEvents(stream PluginEvent) returns (stream PluginEventResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// ExecuteCommandRequest - Execute a plugin command
+message ExecuteCommandRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string command = 3;
+  repeated bytes args = 4; // JSON-encoded arguments
+  int32 timeout_ms = 5;
+}
+
+message ExecuteCommandResponse {
+  oneof result {
+    bytes data = 1;      // JSON-encoded result
+    PluginError error = 2;
+  }
+  int64 execution_time_ms = 3;
+}
+
+// EnablePluginRequest - Enable stateful plugin
+message EnablePluginRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  bytes config = 3; // JSON-encoded config
+}
+
+message EnablePluginResponse {
+  bool success = 1;
+  string instance_id = 2;
+  PluginError error = 3;
+}
+
+// DisablePluginRequest - Disable stateful plugin
+message DisablePluginRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string instance_id = 3;
+}
+
+message DisablePluginResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// InitializePluginRequest - Initialize plugin
+message InitializePluginRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  bytes config = 3; // JSON-encoded config (optional, for stateful plugins)
+}
+
+message InitializePluginResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// ShutdownPluginRequest - Shutdown plugin
+message ShutdownPluginRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+}
+
+message ShutdownPluginResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// PluginEvent - Event streaming for stateful plugins
+message PluginEvent {
+  string event_id = 1;
+  string tenant_id = 2;
+  string plugin_id = 3;
+  string event_type = 4; // queue.add, song.play, etc.
+  bytes payload = 5;
+  int64 timestamp = 6;
+}
+
+message PluginEventResponse {
+  string event_id = 1;
+  bool success = 2;
+  PluginError error = 3;
+}

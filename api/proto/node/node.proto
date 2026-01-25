@@ -1,0 +1,118 @@
+// api/proto/node/node.proto
+syntax = "proto3";
+
+package wabisaby.node.v1;
+
+option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/node;nodepb";
+
+service NodeCoordinator {
+    // Register a new storage node
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+
+    // Send health and status updates
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+    // Get assigned pinning tasks
+    rpc GetPinTasks(GetPinTasksRequest) returns (GetPinTasksResponse);
+
+    // Report success or failure of a pin operation
+    rpc ReportPinStatus(ReportPinStatusRequest) returns (ReportPinStatusResponse);
+
+    // Notify the coordinator about new content that needs to be replicated
+    // This is called by storage plugins
+    rpc IndexContent(IndexContentRequest) returns (IndexContentResponse);
+
+    // Get list of active peers to connect to
+    rpc GetPeers(GetPeersRequest) returns (GetPeersResponse);
+}
+
+message IndexContentRequest {
+    string song_id = 1;
+    string cid = 2;
+    string playlist_cid = 3;
+    repeated string segment_cids = 4;
+    int64 total_size_bytes = 5;
+    int32 replication_min = 6;
+    int32 replication_max = 7;
+}
+
+message IndexContentResponse {
+    bool success = 1;
+    string content_id = 2;
+    string error = 3;
+}
+
+message RegisterRequest {
+    string peer_id = 1;
+    string name = 2;
+    string region = 3;
+    repeated string ipfs_multiaddrs = 4;
+    int64 storage_capacity_bytes = 5;
+    string wallet_address = 6;
+    string auth_token = 7;
+}
+
+message RegisterResponse {
+    bool success = 1;
+    string node_id = 2;
+    string error = 3;
+}
+
+message HeartbeatRequest {
+    string node_id = 1;
+    int64 storage_used_bytes = 2;
+    double cpu_usage = 3;
+    double memory_usage = 4;
+    int64 uptime_seconds = 5;
+}
+
+message HeartbeatResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetPinTasksRequest {
+    string node_id = 1;
+}
+
+message GetPinTasksResponse {
+    repeated PinTask tasks = 1;
+}
+
+message PinTask {
+    string task_id = 1;
+    string cid = 2;
+    int64 total_size_bytes = 3;
+}
+
+message ReportPinStatusRequest {
+    string node_id = 1;
+    string task_id = 2;
+    enum Status {
+        PIN_STATUS_UNSPECIFIED = 0;
+        PIN_STATUS_PINNED = 1;
+        PIN_STATUS_FAILED = 2;
+    }
+    Status status = 3;
+    string error_message = 4;
+}
+
+message ReportPinStatusResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+message GetPeersRequest {
+    string node_id = 1;
+}
+
+message GetPeersResponse {
+    repeated PeerInfo peers = 1;
+    string error = 2;
+}
+
+message PeerInfo {
+    string peer_id = 1;
+    repeated string multiaddrs = 2;
+    string region = 3;
+}

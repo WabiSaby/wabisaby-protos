@@ -1,0 +1,259 @@
+// api/proto/plugin/capabilities.proto
+syntax = "proto3";
+
+package wabisaby.plugin.v1;
+
+option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/plugin;pluginpb";
+
+import "common.proto";
+
+// PluginCapabilitiesService - Allows plugins to call back to core
+service PluginCapabilitiesService {
+  // Storage operations
+  rpc StorageGet(StorageGetRequest) returns (StorageGetResponse);
+  rpc StorageSet(StorageSetRequest) returns (StorageSetResponse);
+  rpc StorageDelete(StorageDeleteRequest) returns (StorageDeleteResponse);
+  rpc StorageKeys(StorageKeysRequest) returns (StorageKeysResponse);
+
+  // HTTP operations
+  rpc HTTPFetch(HTTPFetchRequest) returns (HTTPFetchResponse);
+
+  // Queue operations
+  rpc QueueGet(QueueGetRequest) returns (QueueGetResponse);
+  rpc QueueAdd(QueueAddRequest) returns (QueueAddResponse);
+  rpc QueueRemove(QueueRemoveRequest) returns (QueueRemoveResponse);
+  rpc QueueReorder(QueueReorderRequest) returns (QueueReorderResponse);
+
+  // Song operations
+  rpc SongSearch(SongSearchRequest) returns (SongSearchResponse);
+  rpc SongGet(SongGetRequest) returns (SongGetResponse);
+
+  // User operations
+  rpc UserGet(UserGetRequest) returns (UserGetResponse);
+
+  // Notification operations
+  rpc NotificationSend(NotificationSendRequest) returns (NotificationSendResponse);
+
+  // Secret operations
+  rpc SecretGet(SecretGetRequest) returns (SecretGetResponse);
+  rpc SecretSet(SecretSetRequest) returns (SecretSetResponse);
+
+  // Event operations
+  rpc EventPublish(EventPublishRequest) returns (EventPublishResponse);
+
+  // Logging
+  rpc Log(LogRequest) returns (LogResponse);
+}
+
+// Storage messages
+message StorageGetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string key = 3;
+}
+
+message StorageGetResponse {
+  bytes value = 1; // JSON-encoded value
+  PluginError error = 2;
+}
+
+message StorageSetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string key = 3;
+  bytes value = 4; // JSON-encoded value
+}
+
+message StorageSetResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+message StorageDeleteRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string key = 3;
+}
+
+message StorageDeleteResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+message StorageKeysRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string prefix = 3;
+}
+
+message StorageKeysResponse {
+  repeated string keys = 1;
+  PluginError error = 2;
+}
+
+// HTTP messages
+message HTTPFetchRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string url = 3;
+  string method = 4;
+  map<string, string> headers = 5;
+  bytes body = 6;
+  int32 timeout_ms = 7;
+}
+
+message HTTPFetchResponse {
+  int32 status_code = 1;
+  map<string, string> headers = 2;
+  bytes body = 3;
+  PluginError error = 4;
+}
+
+// Queue messages
+message QueueGetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+}
+
+message QueueGetResponse {
+  bytes queue_data = 1; // JSON-encoded queue
+  PluginError error = 2;
+}
+
+message QueueAddRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  bytes song_data = 3; // JSON-encoded song
+  int32 position = 4; // -1 for end
+}
+
+message QueueAddResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+message QueueRemoveRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  int32 position = 3;
+}
+
+message QueueRemoveResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+message QueueReorderRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  int32 from_position = 3;
+  int32 to_position = 4;
+}
+
+message QueueReorderResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// Song messages
+message SongSearchRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string query = 3;
+  int32 limit = 4;
+}
+
+message SongSearchResponse {
+  bytes songs = 1; // JSON-encoded array of songs
+  PluginError error = 2;
+}
+
+message SongGetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string song_id = 3;
+}
+
+message SongGetResponse {
+  bytes song = 1; // JSON-encoded song
+  PluginError error = 2;
+}
+
+// User messages
+message UserGetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string user_id = 3;
+}
+
+message UserGetResponse {
+  bytes user = 1; // JSON-encoded user
+  PluginError error = 2;
+}
+
+// Notification messages
+message NotificationSendRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string user_id = 3;
+  string title = 4;
+  string message = 5;
+  string notification_type = 6; // info, warning, error, success
+}
+
+message NotificationSendResponse {
+  bool success = 1;
+  string notification_id = 2;
+  PluginError error = 3;
+}
+
+// Secret messages
+message SecretGetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string key = 3;
+}
+
+message SecretGetResponse {
+  string value = 1;
+  PluginError error = 2;
+}
+
+message SecretSetRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string key = 3;
+  string value = 4;
+}
+
+message SecretSetResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// Event messages
+message EventPublishRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string event_type = 3;
+  bytes payload = 4; // JSON-encoded event data
+}
+
+message EventPublishResponse {
+  bool success = 1;
+  PluginError error = 2;
+}
+
+// Log messages
+message LogRequest {
+  string tenant_id = 1;
+  string plugin_id = 2;
+  string level = 3; // debug, info, warn, error
+  string message = 4;
+  map<string, string> fields = 5;
+}
+
+message LogResponse {
+  bool success = 1;
+  PluginError error = 2;
+}

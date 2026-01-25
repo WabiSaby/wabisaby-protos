@@ -1,0 +1,28 @@
+// api/proto/plugin/common.proto
+syntax = "proto3";
+
+package wabisaby.plugin.v1;
+
+option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/plugin;pluginpb";
+
+// PluginError - Standard error type
+message PluginError {
+  string code = 1;
+  string message = 2;
+  map<string, string> metadata = 3;
+}
+
+// HealthCheckRequest/Response
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum Status {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  Status status = 1;
+  map<string, string> metadata = 2;
+}
