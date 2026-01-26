@@ -1,4 +1,4 @@
-module github.com/WabiSaby/WabiSaby-Protos
+module github.com/wabisaby/wabisaby-protos
 
 go 1.24.4
 

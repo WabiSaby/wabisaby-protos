@@ -3,7 +3,7 @@ syntax = "proto3";
 
 package wabisaby.plugin.v1;
 
-option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/plugin;pluginpb";
+option go_package = "github.com/wabisaby/wabisaby-protos/go/plugin;pluginpb";
 
 import "common.proto";
 

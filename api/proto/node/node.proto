@@ -3,7 +3,7 @@ syntax = "proto3";
 
 package wabisaby.node.v1;
 
-option go_package = "github.com/WabiSaby/WabiSaby-Protos/go/node;nodepb";
+option go_package = "github.com/wabisaby/wabisaby-protos/go/node;nodepb";
 
 service NodeCoordinator {
     // Register a new storage node
