@@ -1,8 +1,12 @@
-.PHONY: proto clean proto-plugin proto-node
+.PHONY: proto clean proto-plugin proto-node test
 
 proto: proto-plugin proto-node
 
+test: proto ## Generate protobuf code (no tests to run, but ensures code is generated)
+	@echo "Protobuf code generated successfully"
+
 proto-plugin:
+	@mkdir -p go/plugin
 	protoc \
 		--proto_path=api/proto/plugin \
 		--go_out=go/plugin \
@@ -12,6 +16,7 @@ proto-plugin:
 		api/proto/plugin/*.proto
 
 proto-node:
+	@mkdir -p go/node
 	protoc \
 		--proto_path=api/proto/node \
 		--go_out=go/node \
