@@ -1,6 +1,8 @@
-# Generated Go files from protobuf
-go/plugin/*.pb.go
-go/node/*.pb.go
+# Generated Go is not committed here. Go bindings are published in wabisaby-protos-go.
+# Run `make proto` for local dev; use `make proto-for-go OUT_DIR=../wabisaby-protos-go` to publish.
+
+# Generated Go output (proto-only repo)
+go/
 
 # Go workspace file
 go.work
