@@ -1,6 +1,9 @@
-.PHONY: proto clean proto-plugin proto-node test proto-for-go
+.PHONY: proto build clean proto-plugin proto-node test proto-for-go
 
 proto: proto-plugin proto-node
+
+# DevKit and scripts expect "make build"; for this repo it means generating protobuf code.
+build: proto
 
 # Generate Go code for wabisaby-protos-go repo (new module path). Set OUT_DIR to the -go repo root.
 # Usage: make proto-for-go OUT_DIR=/path/to/wabisaby-protos-go
